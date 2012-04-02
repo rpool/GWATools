@@ -74,7 +74,8 @@ class DataContainers:
         return
 
     def PylabUpdateParams(self):
-        figwidth_pt   = 246.0 # pt (from revtex \showthe\columnwidth)
+        figwidth_pt   = 948.0 # pt (from revtex \showthe\columnwidth)
+#        figwidth_pt   = 246.0 # pt (from revtex \showthe\columnwidth)
         inches_per_pt = 1.0/72.27
         figwidth      = figwidth_pt*inches_per_pt
         golden_mean   = (scipy.sqrt(5.0)-1.0)/2.0 # Aesthetic ratio
@@ -82,16 +83,16 @@ class DataContainers:
         fig_size      = [figwidth,figheight]
         params        = {'backend': 'pdf',
                          'patch.antialiased': True,
-                         'axes.labelsize': 8,
+                         'axes.labelsize': 10,
                          'axes.linewidth': 0.5,
                          'grid.color': '0.75',
                          'grid.linewidth': 0.25,
                          'grid.linestyle': ':',
                          'axes.axisbelow': False,
-                         'text.fontsize': 8,
+                         'text.fontsize': 10,
                          'legend.fontsize': 5,
-                         'xtick.labelsize': 8,
-                         'ytick.labelsize': 8,
+                         'xtick.labelsize': 10,
+                         'ytick.labelsize': 10,
                          'text.usetex': True,
                          'figure.figsize': fig_size}
         left   = 0.16
@@ -136,9 +137,24 @@ class DataContainers:
         pylab.rcParams.update(PylabParameters)
         PylabFigure = pylab.figure()
         PylabFigure.clf()
-        PylabAxis   = PylabFigure.add_axes(Rectangle)
+        PylabAxis = PylabFigure.add_axes(Rectangle)
         PylabAxis.scatter(x=X,
                           y=Y)
+        XSign = scipy.array(PylabAxis.get_xlim())
+        YSign = -scipy.log10(scipy.array([5.0e-8,5.0e-8]))
+        PylabAxis.plot(XSign,
+                       YSign,
+                       linestyle='--',
+                       color='grey',
+                       linewidth=1.0)
+        XSugg = scipy.array(PylabAxis.get_xlim())
+        YSugg = -scipy.log10(scipy.array([1.0e-5,1.0e-5]))
+        PylabAxis.plot(XSugg,
+                       YSugg,
+                       linestyle=':',
+                       color='grey',
+                       linewidth=1.0)
+        PylabAxis.set_ylim([0.0,PylabAxis.get_ylim()[1]])
         PylabFigure.savefig('Manhattan.png')
         PylabAxis.clear()
         pylab.close(PylabFigure)

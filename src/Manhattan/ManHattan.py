@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 import os
 import argparse
+import re
+import sys
+import colorsys
 
 import ArgumentParser
 import Logger
@@ -25,13 +28,43 @@ def main(ExecutableName):
     ArgumentParser.LogArguments(Log,
                                 ArgParser,
                                 Arguments)
+    if(Arguments.SnpTestOutputFile!=None):
+        DCs = DataContainer.DataContainers()
+        DCs.ParseSnpTestGWAOutput(Arguments.SnpTestOutputFile,
+                                  Log)
+        DCs.PlotManhattan(xname='pos',
+                          yname='pvalue',
+                          Log=Log)
+    else:
+        SnpTestOutputFiles = []
+        for File in os.listdir(Arguments.SnpTestOutputPath):
+            if((re.search(Arguments.SnpOutputPreExtStr,File)) and
+               (not re.search('.log',File))):
+                SnpTestOutputFiles.append(File)
+        for p in range(Arguments.NPhe):
+            P     = '_PHE'+str(p+1)+'_'
+            Files = []
+            for c in range(Arguments.NChr):
+                C = '_CHR'+str(c+1)+'_'
+                for File in SnpTestOutputFiles:
+                    if(re.search(P,File) and
+                       re.search(C,File)):
+                        Files.append(File)
+            DCsList = DataContainer.ListDataContainers()
+            DCsList.SetPhenotypeName(re.sub('_','',P))
 
-    DCs = DataContainer.DataContainers()
-    DCs.ParseSnpTestGWAOutput(Arguments.SnpTestOutputFile,
-                              Log)
-    DCs.PlotManhattan(xname='pos',
-                      yname='pvalue',
-                      Log=Log)
+            HSV_tuples = [(x*1.0/len(Files), 0.5, 0.5) for x in range(len(Files))]
+            RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
+            for i in range(len(Files)):
+                File = Files[i]
+                DCs  = DataContainer.DataContainers()
+                DCs.ParseSnpTestGWAOutput(os.path.join(Arguments.SnpTestOutputPath,File),
+                                          Log)
+                DCs.Color = RGB_tuples[i]
+                DCsList.List.append(DCs)
+            DCsList.PlotManhattan(xname='pos',
+                                  yname='pvalue',
+                                  Log=Log)
 
     LogString = '**** Done :-)'
     print LogString

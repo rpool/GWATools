@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 import os
-import argparse
 import re
-import sys
 import colorsys
 
 import ArgumentParser

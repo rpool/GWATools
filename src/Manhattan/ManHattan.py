@@ -26,6 +26,7 @@ def main(ExecutableName):
     ArgumentParser.LogArguments(Log,
                                 ArgParser,
                                 Arguments)
+
     if(Arguments.SnpTestOutputFile!=None):
         DCs = DataContainer.DataContainers()
         DCs.ParseSnpTestGWAOutput(Arguments.SnpTestOutputFile,

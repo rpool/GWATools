@@ -29,10 +29,11 @@ def main(ExecutableName):
     SnpTestOutputFiles = []
     for File in os.listdir(Arguments.SnpTestOutputPath):
         if((re.search(Arguments.SnpOutputPreExtStr,File)) and
-           (not re.search('.log',File))):
+           (not re.search('.log',File)) and
+           (not re.search('.swp',File))):
             SnpTestOutputFiles.append(File)
     for p in range(Arguments.NPhe):
-#    for p in range(Arguments.NPhe-1,Arguments.NPhe):
+#    for p in range(162,Arguments.NPhe):
         P     = '_PHE'+str(p+1)+'_'
 #        for c in range(1):
         for c in range(Arguments.NChr):

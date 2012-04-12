@@ -42,8 +42,10 @@ def main(ExecutableName):
                (not re.search('.log',File))):
                 SnpTestOutputFiles.append(File)
         for p in range(Arguments.NPhe):
+#        for p in range(157,Arguments.NPhe):
             P     = '_PHE'+str(p+1)+'_'
             Files = []
+#            for c in range(1):
             for c in range(Arguments.NChr):
                 C = '_CHR'+str(c+1)+'_'
                 for File in SnpTestOutputFiles:
@@ -53,8 +55,24 @@ def main(ExecutableName):
             DCsList = DataContainer.ListDataContainers()
             DCsList.SetPhenotypeName(re.sub('_','',P))
 
-            HSV_tuples = [(x*1.0/len(Files), 0.5, 0.5) for x in range(len(Files))]
-            RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
+            HSV_tuples = None
+            RGB_tuples = None
+            if(Arguments.boGreyScale):
+                boGrey     = True
+                GreyHSV    = (0.0,0.0,0.4)
+                BlackHSV   = (0.0,0.0,0.0)
+                HSV_tuples = []
+                for i in range(len(Files)):
+                    if(boGrey):
+                        HSV_tuples.append(GreyHSV)
+                        boGrey = False
+                    else:
+                        HSV_tuples.append(BlackHSV)
+                        boGrey = True
+                RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
+            else:
+                HSV_tuples = [(x*1.0/len(Files), 0.75, 0.75) for x in range(len(Files))]
+                RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
             for i in range(len(Files)):
                 File = Files[i]
                 DCs  = DataContainer.DataContainers()

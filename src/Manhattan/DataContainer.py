@@ -171,8 +171,9 @@ class DataContainers:
 
 class ListDataContainers:
     def __init__(self):
-        self.List          = []
-        self.PhenotypeName = ''
+        self.List              = []
+        self.PhenotypeName     = ''
+        self.OffsetBetweenChrs = 0
         return
 
     def SetPhenotypeName(self,
@@ -185,7 +186,7 @@ class ListDataContainers:
 
 
     def PylabUpdateParams(self):
-        figwidth_pt   = 948.0 # pt (from revtex \showthe\columnwidth)
+        figwidth_pt   = 1422.0 # pt (from revtex \showthe\columnwidth)
 #        figwidth_pt   = 246.0 # pt (from revtex \showthe\columnwidth)
         inches_per_pt = 1.0/72.27
         figwidth      = figwidth_pt*inches_per_pt
@@ -194,21 +195,21 @@ class ListDataContainers:
         fig_size      = [figwidth,figheight]
         params        = {'backend': 'pdf',
                          'patch.antialiased': True,
-                         'axes.labelsize': 10,
+                         'axes.labelsize': 18,
                          'axes.linewidth': 0.5,
                          'grid.color': '0.75',
                          'grid.linewidth': 0.25,
                          'grid.linestyle': ':',
                          'axes.axisbelow': False,
-                         'text.fontsize': 10,
-                         'legend.fontsize': 5,
-                         'xtick.labelsize': 10,
-                         'ytick.labelsize': 10,
+                         'text.fontsize': 14,
+                         'legend.fontsize': 14,
+                         'xtick.labelsize': 14,
+                         'ytick.labelsize': 14,
                          'text.usetex': True,
                          'figure.figsize': fig_size}
-        left   = 0.16
-        bottom = 0.16
-        width  = 0.86-left
+        left   = 0.06
+        bottom = 0.10
+        width  = 0.95-left
         height = 0.95-bottom
 
         return params,\
@@ -228,8 +229,10 @@ class ListDataContainers:
         pylab.rcParams.update(PylabParameters)
         PylabFigure = pylab.figure()
         PylabFigure.clf()
-        PylabAxis = PylabFigure.add_axes(Rectangle)
-        XMax      = 0
+        PylabAxis   = PylabFigure.add_axes(Rectangle)
+        XMax        = 0
+        XTicks      = []
+        XTickLabels = []
         for i in range(len(self.List)):
             DCs   = self.List[i]
             XName = ''
@@ -248,16 +251,38 @@ class ListDataContainers:
                 if(YEntry!='-1'):
                     Y.append(float(YEntry))
                     X.append(int(XEntry))
-#                else:
-#                    Y.append(float(1.0))
+                else:
+                    Y.append(1.0)
+                    X.append(int(XEntry))
+            XTicks.append(0.5*(min(X)+max(X))+XMax)
+            XTickLabels.append(r'${\rm '+DCs.Label+'}$')
             X    = scipy.array(X) + XMax
-            XMax = X.max()+5e7
+            XMax = X.max()+self.OffsetBetweenChrs
             Y    = -scipy.log10(scipy.array(Y))
 
-            PylabAxis.scatter(x=X,
-                              y=Y,
-                              color=DCs.Color,
-                              label=r'${\rm '+DCs.Label+'}$')
+            YInsign = Y < -scipy.log10(1.0e-5)
+            YSign   = Y > -scipy.log10(5.0e-8)
+            YSugg   = Y >= -scipy.log10(1.0e-5)
+            YSugg  *= Y <= -scipy.log10(5.0e-8)
+
+            YY = scipy.compress(YInsign,Y)
+            if(len(YY)>0):
+                PylabAxis.scatter(x=scipy.compress(YInsign,X),
+                                  y=YY,
+                                  color=DCs.Color,
+                                  s=0.5)
+            YY = scipy.compress(YSugg,Y)
+            if(len(YY)>0):
+                PylabAxis.scatter(x=scipy.compress(YSugg,X),
+                                  y=YY,
+                                  color=DCs.Color,
+                                  s=5.0)
+            YY = scipy.compress(YSign,Y)
+            if(len(YY)>0):
+                PylabAxis.scatter(x=scipy.compress(YSign,X),
+                                  y=YY,
+                                  color=DCs.Color,
+                                  s=10.0)
 
         XSign = scipy.array(PylabAxis.get_xlim())
         YSign = -scipy.log10(scipy.array([5.0e-8,5.0e-8]))
@@ -266,23 +291,32 @@ class ListDataContainers:
                        linestyle='--',
                        color='grey',
                        label=r'${\rm '+self.PhenotypeName+'}$',
-                       linewidth=1.0)
+                       linewidth=1.25)
         XSugg = scipy.array(PylabAxis.get_xlim())
         YSugg = -scipy.log10(scipy.array([1.0e-5,1.0e-5]))
         PylabAxis.plot(XSugg,
                        YSugg,
                        linestyle=':',
                        color='grey',
-                       linewidth=1.0)
+                       linewidth=1.25)
         PylabAxis.set_ylim([0.0,PylabAxis.get_ylim()[1]])
-        PylabAxis.set_xlim([-5e7,PylabAxis.get_xlim()[1]])
+#        PylabAxis.set_xlim([-5e7,PylabAxis.get_xlim()[1]])
+        PylabAxis.set_xlim([0,XMax])
         Handles,Labels = PylabAxis.get_legend_handles_labels()
         PylabAxis.legend(Handles,
                          Labels,
                          fancybox=True,
                          shadow=True,
-                         loc="best")
-        PylabAxis.set_xlabel(r'$\rm bpp$')
+                         loc='best')
+        PylabAxis.set_xlabel(r'$\rm position$')
+        PylabAxis.spines['right'].set_visible(False)
+        PylabAxis.spines['top'].set_visible(False)
+        PylabAxis.xaxis.set_ticks_position('bottom')
+        PylabAxis.yaxis.set_ticks_position('left')
+        PylabAxis.xaxis.set_ticks(XTicks)
+        PylabAxis.xaxis.set_ticklabels(XTickLabels)
+        for Label in PylabAxis.xaxis.get_ticklabels():
+            Label.set_rotation(90)
         PylabAxis.set_ylabel(r'$-{\rm log}_{10}(p-{\rm value})$')
         PylabFigure.savefig('Manhattan_'+self.PhenotypeName+'.png')
         PylabAxis.clear()

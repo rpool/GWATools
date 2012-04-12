@@ -59,6 +59,12 @@ def ParseArguments(Log=None):
                                 help='INT: Number of chromosomes (input)',
                                 metavar='INT',
                                 default=22)
+    ArgumentParser.add_argument('-G',
+                                '--greyscale',
+                                dest='boGreyScale',
+                                help='FLAG: Generate Manhattan plots in greyscale  (input)',
+                                action='store_true',
+                                default=False)
 
     Arguments = ArgumentParser.parse_args()
 

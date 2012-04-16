@@ -69,6 +69,12 @@ def ParseArguments(Log=None):
                                 help='INT: Number of chromosomes (input)',
                                 metavar='INT',
                                 default=22)
+    ArgumentParser.add_argument('-Z',
+                                '--readzextr',
+                                dest='boReadZExtrFromFile',
+                                help='FLAG: Read z-axis extrema from file  (input)',
+                                action='store_true',
+                                default=False)
     ArgumentParser.add_argument('-G',
                                 '--greyscale',
                                 dest='boGreyScale',

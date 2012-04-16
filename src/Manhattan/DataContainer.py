@@ -293,7 +293,7 @@ class ListDataContainers:
                        label=r'${\rm '+self.PhenotypeName+'}$',
                        linewidth=1.25)
         XSugg = scipy.array(PylabAxis.get_xlim())
-        YSugg = -scipy.log10(scipy.array([1.0e-5,1.0e-5]))
+        YSugg = -scipy.log10(scipy.array([1.0e-6,1.0e-6]))
         PylabAxis.plot(XSugg,
                        YSugg,
                        linestyle=':',

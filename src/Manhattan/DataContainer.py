@@ -260,9 +260,9 @@ class ListDataContainers:
             XMax = X.max()+self.OffsetBetweenChrs
             Y    = -scipy.log10(scipy.array(Y))
 
-            YInsign = Y < -scipy.log10(1.0e-5)
+            YInsign = Y < -scipy.log10(1.0e-6)
             YSign   = Y > -scipy.log10(5.0e-8)
-            YSugg   = Y >= -scipy.log10(1.0e-5)
+            YSugg   = Y >= -scipy.log10(1.0e-6)
             YSugg  *= Y <= -scipy.log10(5.0e-8)
 
             YY = scipy.compress(YInsign,Y)

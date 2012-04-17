@@ -55,6 +55,12 @@ def ParseArguments(Log=None):
                                 help='STRING: Property to be displayed on the z-axis (input)',
                                 metavar='STRING',
                                 default='pvalue')
+    ArgumentParser.add_argument('-M',
+                                '--metaboliteclassesfile',
+                                dest='MetabolitClassesFileName',
+                                help='STRING: Name of the file that contains the metabolite classes (input)',
+                                metavar='STRING',
+                                default='')
     ArgumentParser.add_argument('-P',
                                 '--nphenotypes',
                                 dest='NPhe',

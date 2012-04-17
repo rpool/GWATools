@@ -33,9 +33,9 @@ def main(ExecutableName):
            (not re.search('.log',File)) and
            (not re.search('.swp',File))):
             SnpTestOutputFiles.append(File)
-    for p in range(Arguments.NPhe):
+#    for p in range(Arguments.NPhe):
 #    for p in range(111,112):
-#        for p in range(157,Arguments.NPhe):
+    for p in range(50,Arguments.NPhe):
         P       = '_PHE'+str(p+1)+'_'
         DCsList = DataContainer.ListDataContainers()
         DCsList.SetPhenotypeName(re.sub('_','',P))

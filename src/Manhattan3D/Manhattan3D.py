@@ -39,6 +39,10 @@ def main(ExecutableName):
         XMin        = None
         XMax        = 0
         X           = []
+        XLeft       = []
+        XRight      = []
+        XTicks      = []
+        XTickLabels = []
         for p in range(1): # if XProperty=='pos', all phenotypes have the same pos file content.
             P = 'PHE'+str(p+1)+'_'
             for c in range(Arguments.NChr):
@@ -52,11 +56,19 @@ def main(ExecutableName):
                         fr.close()
                         for i in range(1,len(FMem)):
                             MinXSpacing = min(MinXSpacing,FMem[i]-FMem[i-1])
-                        if(c==0):
-                            XMin = min(FMem)
-                        X.extend((scipy.array(FMem)+XMax))
-                        XMax += max(FMem)
+#                        XMin = min(FMem)+XMax
+                        X.extend(list(scipy.array(FMem)+XMax))
+                        if(p==0):
+                            XLeft.append(float(min(FMem))+XMax)
+                            XRight.append(float(max(FMem))+XMax)
+                            XTicks.append(0.5*(float(min(FMem))+float(max(FMem)))+XMax)
+                            XTickLabels.append(r'${\rm '+re.sub('_','',C)+'}$')
+                        XMax = max(X)
                         del FMem
+        X     = scipy.array(X)
+        XXMin = X.min()
+        XXMax = X.max()
+
         LogString = '**** Parsed x-axis properties ...'
         print LogString
         Log.Write(LogString+'\n')
@@ -70,6 +82,32 @@ def main(ExecutableName):
         LogString = '**** Processed y-axis properties ...'
         print LogString
         Log.Write(LogString+'\n')
+
+        MNumber = None
+        MName   = None
+        MClass  = None
+        if(Arguments.MetabolitClassesFileName!=''):
+            MNumber = []
+            MName   = []
+            MClass  = []
+            fr      = open(Arguments.MetabolitClassesFileName,'r')
+            for Line in fr.readlines():
+                if(Line[0]=="#"):
+                    continue
+                LStrp = Line.strip().split()
+                MNumber.append(LStrp[0])
+                MName.append(LStrp[1])
+                MClass.append(LStrp[2])
+            fr.close()
+            Classes    = list(set(MClass))
+            ClassDict  = {}
+            ClassRange = {}
+            for Entry in Classes:
+                ClassDict[Entry] = []
+                for i in range(len(MClass)):
+                    if(Entry==MClass[i]):
+                        ClassDict[Entry].append(int(MNumber[i]))
+                ClassRange[Entry] = [min(ClassDict[Entry]),max(ClassDict[Entry])]
 
         ZMin        = 0.0
         ZMax        = -fLARGE
@@ -115,6 +153,52 @@ def main(ExecutableName):
             fw.write(str(ZMin)+' '+str(ZMax)+'\n')
             fw.close()
 
+        LogString = '**** Parsing in z-axis properties ...'
+        print LogString
+        Log.Write(LogString+'\n')
+        ZSugg = {}
+        ZSign = {}
+        YSugg = {}
+        YSign = {}
+        XSugg = {}
+        XSign = {}
+        for p in range(Arguments.NPhe):
+#        for p in range(0):
+            P          = 'PHE'+str(p+1)+'_'
+            PHE        = re.sub('_','',P)
+            LogString  = '** Now at '+PHE+' ...'
+            print LogString
+            Log.Write(LogString+'\n')
+            ZZ = []
+            for c in range(Arguments.NChr):
+                C = 'CHR'+str(c+1)+'_'
+                for File in ZListDir:
+                    if(re.search(C+P,File)):
+                        fr   = open(os.path.join(ZPath,File),'r')
+                        FMem = []
+                        for Line in fr.readlines():
+                            z = Line.strip().split()[0]
+                            if(z!='-1'):
+                                FMem.append(float(z))
+                            else:
+                                FMem.append(1.0)
+                        fr.close()
+                        FMem  = scipy.real(-scipy.log10(scipy.array(FMem)))
+                        ZZ.extend(list(FMem))
+                        del FMem
+            Sign  = ZZ  > -scipy.log10(5.0e-8)
+            Sugg  = ZZ >= -scipy.log10(1.0e-6)
+            Sugg *= ZZ <= -scipy.log10(5.0e-8)
+            ZSugg[PHE] = scipy.compress(Sugg,ZZ)
+            ZSign[PHE] = scipy.compress(Sign,ZZ)
+            YSugg[PHE] = scipy.ones(len(ZSugg[PHE]))*(p+1)
+            YSign[PHE] = scipy.ones(len(ZSign[PHE]))*(p+1)
+            XSugg[PHE] = scipy.compress(Sugg,X)
+            XSign[PHE] = scipy.compress(Sign,X)
+            del ZZ
+        del X
+        del Y
+
         LogString = '**** Generating 3D-Manhattan plot ...'
         print LogString
         Log.Write(LogString+'\n')
@@ -142,7 +226,7 @@ def main(ExecutableName):
                          'figure.figsize': fig_size}
         left   = 0.06
         bottom = 0.10
-        width  = 0.95-left
+        width  = 0.92-left
         height = 0.95-bottom
 
         pylab.rcParams.update(params)
@@ -152,38 +236,74 @@ def main(ExecutableName):
 
         Rectangle   = [left, bottom, width, height]
         PylabAxis   = PylabFigure.add_axes(Rectangle)
-#        PylabAxis.set_xlabel(XLabel)
-#        PylabAxis.set_ylabel(YLabel)
-        Values = pylab.ones(shape=(10,len(X)),dtype=float) # indices run from 1 in data file!
-        X             = scipy.array(X)
-        print len(X)
-        Y             = scipy.array(Y)
-#        Extent        = [X.min()-0.5,X.max()+0.5,X.min()-0.5,X.max()+0.5]
-#        Extent        = [X.min()-0.5,X.max()+0.5,Y.min()-0.5,Y.max()+0.5]
-        CMap          = pylab.cm.get_cmap(name='jet',
-                                          lut=None)
-        PylabImAxis   = PylabFigure.add_axes(Rectangle)
-        PylabImage    = PylabImAxis.imshow(Values,
-#                                           extent=Extent,
-                                           interpolation='nearest',
-                                           cmap=CMap,
-                                           origin='lower')
+        if(Arguments.XProperty=='pos'):
+            PylabAxis.set_xlabel(r'${\rm position}$')
+        if(Arguments.YProperty=='PHE'):
+            PylabAxis.set_ylabel(r'${\rm metabolite}$')
 
-
-        LogString = '**** Writing plot to \"HeatMap.png\" ...'
+        for p in range(Arguments.NPhe):
+#        for p in range(0):
+            P  = 'PHE'+str(p+1)
+            if(len(ZSugg[P])>0):
+                PylabAxis.scatter(x=XSugg[P],
+                                  y=YSugg[P],
+                                  color='black',
+                                  s=ZSugg[P]/ZMax*100.0,
+                                  marker='s',
+                                  alpha=0.15,
+                                  antialiased=True,
+                                  edgecolors='none')
+            if(len(ZSign[P])>0):
+                PylabAxis.scatter(x=XSign[P],
+                                  y=YSign[P],
+                                  color='black',
+                                  s=ZSign[P]/ZMax*100.0,
+                                  marker='o',
+                                  alpha=0.15,
+                                  antialiased=True,
+                                  edgecolors='none')
+        PlotFile  = 'Manhattan3D.pdf'
+        LogString = '**** Writing plot to \"'+PlotFile+'\" ...'
         print LogString
         Log.Write(LogString+'\n')
+        XXRange  = float(XXMax)-float(XXMin)
+        XXOffset = XXRange*0.005
+        PylabAxis.set_xlim([float(XXMin)-XXOffset,float(XXMax)+XXOffset])
+        PylabAxis.set_ylim([0,YMax+2])
+        for Key,Value in ClassRange.iteritems():
+            PylabAxis.plot(scipy.array([float(XXMin)-XXOffset,float(XXMax)+XXOffset]),
+                           scipy.ones(2)*Value[0]-0.5,
+                           lw=0.25,
+                           color='black')
+            PylabAxis.plot(scipy.array([float(XXMin)-XXOffset,float(XXMax)+XXOffset]),
+                           scipy.ones(2)*Value[1]+0.5,
+                           lw=0.25,
+                           color='black')
+            PylabAxis.text(float(XXMax)+XXOffset,
+                           float(Value[0]+Value[1])*0.5,
+                           r'${\rm '+Key+'}$',
+                           verticalalignment='center')
+        for Entry in XLeft:
+            PylabAxis.plot(scipy.array([Entry,Entry]),
+                           scipy.array(PylabAxis.get_ylim()),
+                           lw=0.25,
+                           color='black')
+        for Entry in XRight:
+            PylabAxis.plot(scipy.array([Entry,Entry]),
+                           scipy.array(PylabAxis.get_ylim()),
+                           lw=0.25,
+                           color='black')
 
-#        PylabImAxis.set_xlim(Extent[0:2])
-#        PylabAxis.set_xlim(Extent[0:2])
-#        PylabImAxis.set_ylim(Extent[2:4])
-#        PylabAxis.set_ylim(Extent[2:4])
-
-        PylabColorBar = pylab.colorbar(PylabImage)
-        PylabColorBar.set_label(r'$-{\rm log_{10}}(p-{\rm value})$')
-
-        pylab.savefig('HeatMap.png')
-#        pylab.show()
+#        PylabAxis.set_ylim([0,164])
+        PylabAxis.spines['right'].set_visible(False)
+        PylabAxis.spines['top'].set_visible(False)
+        PylabAxis.xaxis.set_ticks_position('bottom')
+        PylabAxis.yaxis.set_ticks_position('left')
+        PylabAxis.xaxis.set_ticks(XTicks)
+        PylabAxis.xaxis.set_ticklabels(XTickLabels)
+        for Label in PylabAxis.xaxis.get_ticklabels():
+            Label.set_rotation(90)
+        pylab.savefig(PlotFile)
     else:
         print '!! NOT IMPLEMENTED YET !!'
 

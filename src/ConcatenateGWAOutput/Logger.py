@@ -2,6 +2,7 @@ import os
 import pwd
 import platform
 import datetime
+import re
 
 class Logger:
     def __init__(self,
@@ -23,7 +24,13 @@ class Logger:
         return
 
     def InitFileHandle(self):
-        self.FileHandle = open(self.LogFileName,'w')
+        ListDir = os.listdir(os.getcwd())
+        Counter = 0
+        for File in ListDir:
+            if(re.search(self.GetFileName(),File)):
+                Counter += 1
+        self.LogFileName += str(Counter)
+        self.FileHandle   = open(self.LogFileName,'w')
         return
     def GetFileHandle(self):
         return self.FileHandle

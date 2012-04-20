@@ -46,6 +46,7 @@ class DataContainers:
         LogString = '**** Parsing snptest output file \"'+FileName+'\" ...'
         print LogString
         Log.Write(LogString+'\n')
+        Log.GetFileHandle().flush()
 
         for Entry in FileName.split('_'):
             if(re.search('CHR',Entry)):
@@ -206,6 +207,7 @@ class ListDataContainers:
         LogString = '**** Writing GWA results to \"'+FH.name+'\" ...'
         print LogString
         Log.Write(LogString+'\n')
+        Log.GetFileHandle().flush()
 
         self.WriteHeader(FH)
         HeaderList      = self.GetHeaderList()

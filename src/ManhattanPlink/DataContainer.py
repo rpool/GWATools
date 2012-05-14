@@ -224,6 +224,9 @@ class ListDataContainers:
     def __init__(self):
         self.List              = []
         self.PhenotypeName     = ''
+        self.SnpPositionDict   = None
+        self.SnpChrDict        = None
+        self.XMinMaxPerChrDict = None
         self.OffsetBetweenChrs = 0
         return
 
@@ -301,7 +304,7 @@ class ListDataContainers:
                 xx     = None
                 if(xname=='SNP'):
                     RsId = DCs.DataContainers[XName].GetDataArray()[j]
-                    xx   = DCs.SnpPositionDict[RsId]
+                    xx   = self.SnpPositionDict[RsId]
                 else:
                     xx = DCs.DataContainers[XName].GetDataArray()[j]
                 XEntry = xx
@@ -313,11 +316,11 @@ class ListDataContainers:
                     X.append(int(XEntry))
             XMinMax = None
             if(xname=='SNP'):
-                XMinMax = DCs.XMinMaxPerChrDict[str(i+1)]
+                XMinMax = self.XMinMaxPerChrDict[str(i+1)]
                 XTicks.append(0.5*(XMinMax[0]+XMinMax[1])+XMax)
                 XTickLabels.append(r'${\rm '+DCs.Label+'}$')
-                X    = scipy.array(X) + XMax
-                XMax = XMinMax[1]+self.OffsetBetweenChrs
+                X     = scipy.array(X) + XMax
+                XMax += XMinMax[1]+self.OffsetBetweenChrs
             else:
                 XTicks.append(0.5*(min(X)+max(X))+XMax)
                 XTickLabels.append(r'${\rm '+DCs.Label+'}$')

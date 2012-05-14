@@ -47,8 +47,8 @@ def main(ExecutableName):
         for p in range(78,79):
             P     = '_PHE'+str(p+1)+'_'
             Files = []
-            for c in range(10,11):
-#            for c in range(Arguments.NChr):
+#            for c in range(2):
+            for c in range(Arguments.NChr):
                 C = '_CHR'+str(c+1)+'_'
                 for File in PlinkOutputFiles:
                     if(re.search(P,File) and
@@ -79,18 +79,22 @@ def main(ExecutableName):
             for i in range(len(Files)):
                 File = Files[i]
                 DCs  = DataContainer.DataContainers()
+
+                DCs.Color = RGB_tuples[i]
                 DCs.ParsePlinkGWAOutput(os.path.join(Arguments.PlinkOutputPath,File),
                                         Log)
-                if(boParsedSnpInfo):
-                    DCs.SnpChrDict        = copy.deepcopy(DCsList.List[0].SnpChrDict)
-                    DCs.SnpPositionDict   = copy.deepcopy(DCsList.List[0].SnpPositionDict)
-                    DCs.XMinMaxPerChrDict = copy.deepcopy(DCsList.List[0].XMinMaxPerChrDict)
-                else:
+                if(not boParsedSnpInfo):
                     DCs.ParseSnpInfoFile(Arguments.SnpInfoFile,
                                          Log)
                     boParsedSnpInfo = True
-                DCs.Color = RGB_tuples[i]
                 DCsList.List.append(DCs)
+            DCsList.SnpChrDict                = copy.deepcopy(DCsList.List[0].SnpChrDict)
+            DCsList.SnpPositionDict           = copy.deepcopy(DCsList.List[0].SnpPositionDict)
+            DCsList.XMinMaxPerChrDict         = copy.deepcopy(DCsList.List[0].XMinMaxPerChrDict)
+            DCsList.List[0].SnpChrDict        = None
+            DCsList.List[0].SnpPositionDict   = None
+            DCsList.List[0].XMinMaxPerChrDict = None
+
             DCsList.PlotManhattan(xname='SNP',
                                   yname='P',
                                   Log=Log)

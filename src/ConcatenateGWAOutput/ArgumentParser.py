@@ -55,6 +55,20 @@ def ParseArguments(Log=None):
                                 help='INT: Number of chromosomes (input)',
                                 metavar='INT',
                                 default=22)
+    ArgumentParser.add_argument('-S',
+                                '--phenostart',
+                                dest='PhenoStart',
+                                type=int,
+                                help='INT: Starting phenotype number counting from 1 (input)',
+                                metavar='INT',
+                                default=1)
+    ArgumentParser.add_argument('-E',
+                                '--phenoend',
+                                dest='PhenoEnd',
+                                type=int,
+                                help='INT: Ending phenotype number counting from 1 (input)',
+                                metavar='INT',
+                                default=163)
 
     Arguments = ArgumentParser.parse_args()
 

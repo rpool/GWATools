@@ -238,6 +238,8 @@ class ListDataContainers:
                         Key    = DCs.Column2Name[DCsColumn]
                         String = DCs.DataContainers[Key].GetDataArray()[i]
                     FormatString = '{:>'+str(ColumnWidthList[j])+'}'
+                    if(re.search('nan',String)):
+                        String = 'NA'
                     FH.write(FormatString.format(String))
                 FH.write('\n')
 

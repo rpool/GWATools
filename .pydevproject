@@ -9,5 +9,6 @@
 <path>/GWATools/src/ManhattanSnpTest</path>
 <path>/GWATools/src/ManhattanPlink</path>
 <path>/GWATools/src/ManhattanFaST</path>
+<path>/GWATools/src/ConcatenateGWAOutput</path>
 </pydev_pathproperty>
 </pydev_project>

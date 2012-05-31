@@ -313,7 +313,14 @@ class ListDataContainers:
         self.NTotArray  = scipy.array(DCs.DataContainers[self.GetName2SnpTestHeaderName()['AA']].GetDataArray()).astype(float)
         self.NTotArray += scipy.array(DCs.DataContainers[self.GetName2SnpTestHeaderName()['AB']].GetDataArray()).astype(float)
         self.NTotArray += scipy.array(DCs.DataContainers[self.GetName2SnpTestHeaderName()['BB']].GetDataArray()).astype(float)
-        self.NTotArray += scipy.array(DCs.DataContainers[self.GetName2SnpTestHeaderName()['NULL']].GetDataArray()).astype(float)
+        #=======================================================================
+        ##
+        ## Since cohort_NULL can be larger than zero due to missing phenotype or
+        ## missing covariates in addition to missing genotype data, we decided not
+        ## to add the 'NULL' value
+        ##
+        # self.NTotArray += scipy.array(DCs.DataContainers[self.GetName2SnpTestHeaderName()['NULL']].GetDataArray()).astype(float)
+        #=======================================================================
         self.NTotArray  = list(self.NTotArray)
         return
 

@@ -122,7 +122,7 @@ class ListDataContainers:
         self.HeaderName2SnpTestHeaderName['n_total']       = 'CALCULATE NTOT'
         self.HeaderName2SnpTestHeaderName['imputed']       = 'FROMEXT'
         self.HeaderName2SnpTestHeaderName['used_for_imp']  = 'FROMEXT'
-        self.HeaderName2SnpTestHeaderName['oevar_imp']     = 'score_info'
+        self.HeaderName2SnpTestHeaderName['oevar_imp']     = 'info'
         return
 
     def GetHeaderName2SnpTestHeaderName(self):
@@ -239,6 +239,8 @@ class ListDataContainers:
                         String = DCs.DataContainers[Key].GetDataArray()[i]
                     FormatString = '{:>'+str(ColumnWidthList[j])+'}'
                     if(re.search('nan',String)):
+                        String = 'NA'
+                    elif(String=='-1'):
                         String = 'NA'
                     FH.write(FormatString.format(String))
                 FH.write('\n')

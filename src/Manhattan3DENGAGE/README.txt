@@ -1,0 +1,1 @@
+As a coarse SNP filtering, I use BadSNPs files to get rid of the SNPs with low MAF. This is based on the SNPInfo file and thus is measured over all subjects in the sample, NOT measured over the sub sample that has phenotype information!

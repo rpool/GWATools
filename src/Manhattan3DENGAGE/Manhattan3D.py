@@ -3,8 +3,9 @@ import os
 import sys
 import re
 import scipy
-import pylab
 import matplotlib
+matplotlib.use('Agg')
+import pylab
 
 import ArgumentParser
 import Logger
@@ -408,12 +409,15 @@ def main(ExecutableName):
 #                        FMem  = scipy.real(-scipy.log10(scipy.array(FMem)))
 #                        ZZ.extend(list(FMem))
 #                        del FMem
-            Sign  = (ZZ  > (-scipy.log10(5.0e-8)))
-            Sugg  = (ZZ >= (-scipy.log10(1.0e-6)))
-            Sugg *= (ZZ <= (-scipy.log10(5.0e-8)))
-#            Sign  = (ZZ  > (-scipy.log10(5.0e-8/11325.0)))
-#            Sugg  = (ZZ >= (-scipy.log10(1.0e-6/11325.0)))
-#            Sugg *= (ZZ <= (-scipy.log10(5.0e-8/11325.0)))
+#            Sign  = (ZZ  > (-scipy.log10(5.0e-8)))
+#            Sugg  = (ZZ >= (-scipy.log10(1.0e-6)))
+#            Sugg *= (ZZ <= (-scipy.log10(5.0e-8)))
+#            Sign  = (ZZ  > (-scipy.log10(5.0e-8/150.0)))
+#            Sugg  = (ZZ >= (-scipy.log10(1.0e-6/150.0)))
+#            Sugg *= (ZZ <= (-scipy.log10(5.0e-8/150.0)))
+            Sign  = (ZZ  > (-scipy.log10(5.0e-8/11325.0)))
+            Sugg  = (ZZ >= (-scipy.log10(1.0e-6/11325.0)))
+            Sugg *= (ZZ <= (-scipy.log10(5.0e-8/11325.0)))
 #            Sign  = (ZZ  > (-scipy.log10(5.0e-8/float(Arguments.NPhe))))
 #            Sugg  = (ZZ >= (-scipy.log10(1.0e-6/float(Arguments.NPhe))))
 #            Sugg *= (ZZ <= (-scipy.log10(5.0e-8/float(Arguments.NPhe))))
@@ -492,21 +496,22 @@ def main(ExecutableName):
         fig_size      = [figwidth,figheight]
         params        = {'backend': 'pdf',
                          'patch.antialiased': True,
-                         'axes.labelsize': 18,
+                         'axes.labelsize': 28,
                          'axes.linewidth': 0.5,
                          'grid.color': '0.75',
                          'grid.linewidth': 0.25,
                          'grid.linestyle': ':',
                          'axes.axisbelow': False,
-                         'text.fontsize': 14,
-                         'legend.fontsize': 14,
-                         'xtick.labelsize': 14,
-                         'ytick.labelsize': 14,
+                         'text.fontsize': 24,
+                         'legend.fontsize': 24,
+                         'axes.fontsize': 24,
+                         'xtick.labelsize': 22,
+                         'ytick.labelsize': 22,
                          'text.usetex': True,
                          'figure.figsize': fig_size}
         left   = 0.06
-        bottom = 0.10
-        width  = 0.92-left
+        bottom = 0.125
+        width  = 0.88-left
         height = 0.95-bottom
 
         pylab.rcParams.update(params)
@@ -543,8 +548,10 @@ def main(ExecutableName):
                                       alpha=0.15,
                                       edgecolors='none')
 #        PlotFile  = 'Manhattan3D.pdf'
-#        PlotFile  = 'Manhattan3DFastConservativeRatios.pdf'
-        PlotFile  = 'Manhattan3DFastRatios.pdf'
+        PlotFile  = 'Manhattan3DFastConservativeRatios.pdf'
+#        PlotFile  = 'Manhattan3DFastRatios.pdf'
+#        PlotFile  = 'Manhattan3DFastSingleMtbs.pdf'
+#        PlotFile  = 'Manhattan3DFastConservativeSingleMtbs.pdf'
         LogString = '**** Writing plot to \"'+PlotFile+'\" ...'
         print LogString
         Log.Write(LogString+'\n')
@@ -564,7 +571,8 @@ def main(ExecutableName):
 #            PylabAxis.text(float(XXMax)+XXOffset,
 #                           float(Value[0]+Value[1])*0.5,
 #                           r'${\rm '+Key+'}$',
-#                           verticalalignment='center')
+#                           verticalalignment='center',
+#                           size=20)
         for Entry in XLeft:
             PylabAxis.plot(scipy.array([Entry,Entry]),
                            scipy.array(PylabAxis.get_ylim()),

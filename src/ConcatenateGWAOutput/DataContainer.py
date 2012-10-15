@@ -184,7 +184,7 @@ class ListDataContainers:
         HeaderList      = self.GetHeaderList()
         for i in range(len(HeaderList)):
             Entry        = HeaderList[i]
-            FormatString = '{:>'+str(ColumnWidthList[i])+'}'
+            FormatString = '{0:>'+str(ColumnWidthList[i])+'}'
             FH.write(FormatString.format(Entry))
         FH.write('\n')
         return
@@ -237,7 +237,7 @@ class ListDataContainers:
                     else:
                         Key    = DCs.Column2Name[DCsColumn]
                         String = DCs.DataContainers[Key].GetDataArray()[i]
-                    FormatString = '{:>'+str(ColumnWidthList[j])+'}'
+                    FormatString = '{0:>'+str(ColumnWidthList[j])+'}'
                     if(re.search('nan',String)):
                         String = 'NA'
                     elif(String=='-1'):

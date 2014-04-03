@@ -6,6 +6,7 @@
 ## git push origin master
 
 # Sync
+# git push origin master
 svn2git --rebase
 
 exit

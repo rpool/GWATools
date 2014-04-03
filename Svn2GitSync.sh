@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then
     echo $0 "\"init/rebase\" \"svn repo basename\" \"ignores (comma separated!)\""
 fi
 
-if [ "$INIINITIALIZE"=="init" ];then
+if [ "$INITIALIZE"=="init" ];then
     Arguments="-s svn+ssh://clio.psy.vu.nl/home/r.pool/svn/$SVNREPOBASENAME $SVNREPOBASENAME --username=r.pool"
     if [ "$IIGNORES"!="" ];then
 	    for i in `echo $IGNORES | sed -e s/","/" "/g`
@@ -38,11 +38,10 @@ if [ "$INIINITIALIZE"=="init" ];then
     cp -rp .git $SVNWORKSPACEPATH
 fi
 
-if [ "$INIINITIALIZE"=="rebase" ]; then
-    cd $SVNWSVNWORKSPACEPATH
+if [ "$INITIALIZE"=="rebase" ]; then
+    cd $SVNWORKSPACEPATH
     git svn rebase
     git push origin --all
     git push origin --all
 fi
 
-exit 0

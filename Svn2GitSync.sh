@@ -40,7 +40,8 @@ if [ "$INITIALIZE" == "init" ];then
     rm -rf $SVNWORKSPACEPATH/.git
     cp -rp .git $SVNWORKSPACEPATH
     cd $SVNWORKSPACEPATH
-    git config core.worktree $PWD
+#    git config core.worktree $PWD
+    git reset HEAD
     cd -
 fi
 

@@ -48,3 +48,5 @@ if [ "$INITIALIZE" == "rebase" ]; then
     git push origin --all
 fi
 
+echo All done ;-)
+exit 0

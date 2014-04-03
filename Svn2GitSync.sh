@@ -54,5 +54,6 @@ if [ "$INITIALIZE" == "rebase" ]; then
     git push origin --all
 fi
 
-echo "All done ;-)"
+echo "All done ..."
+echo "Bye bye ;-)"
 exit 0

@@ -39,10 +39,6 @@ if [ "$INITIALIZE" == "init" ];then
 	done
     rm -rf $SVNWORKSPACEPATH/.git
     cp -rp .git $SVNWORKSPACEPATH
-    cd $SVNWORKSPACEPATH
-##    git config core.worktree $PWD
-    git reset HEAD
-    cd -
 fi
 
 if [ "$INITIALIZE" == "rebase" ]; then
@@ -53,6 +49,7 @@ if [ "$INITIALIZE" == "rebase" ]; then
             Arguments=$Arguments" --ignore-paths=$i"
         done
     fi
+    git reset --hard HEAD
     git svn rebase $Arguments
     git push origin --all
     git push origin --all

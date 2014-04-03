@@ -43,10 +43,16 @@ fi
 
 if [ "$INITIALIZE" == "rebase" ]; then
     cd $SVNWORKSPACEPATH
-    git svn rebase
+    if [ "$IIGNORES"!="" ];then
+        for i in `echo $IGNORES | sed -e s/","/" "/g`
+        do
+            Arguments=$Arguments" --ignore-paths=$i"
+        done
+    fi
+    git svn rebase $Arguments
     git push origin --all
     git push origin --all
 fi
 
-echo All done ;-)
+echo "All done ;-)"
 exit 0

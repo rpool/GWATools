@@ -39,6 +39,9 @@ if [ "$INITIALIZE" == "init" ];then
 	done
     rm -rf $SVNWORKSPACEPATH/.git
     cp -rp .git $SVNWORKSPACEPATH
+    cd $SVNWORKSPACEPATH
+    git config core.worktree $PWD
+    cd -
 fi
 
 if [ "$INITIALIZE" == "rebase" ]; then

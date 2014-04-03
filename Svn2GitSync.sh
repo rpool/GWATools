@@ -27,7 +27,6 @@ if [ "$INITIALIZE" == "init" ];then
 	    rm -rf $SVNREPOBASENAME
 	fi
     git svn clone -s $Arguments
-#    git svn clone -s svn+ssh://clio.psy.vu.nl/home/r.pool/svn/$SVNSVNREPOBASENAME $SVNSVNREPOBASENAME --ignore-paths=src/RadialGWA --username=r.pool
     cd $SVNREPOBASENAME
     git remote add origin git@github.com:rpool/$SVNREPOBASENAME.git
     git push origin --all
